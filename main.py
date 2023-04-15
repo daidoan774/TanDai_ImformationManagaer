@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-
 import sqlite3
 from tkinter import*
 
@@ -42,7 +41,7 @@ class LoginWindow:
             self.parent.destroy()
             StudentManager()
         else:
-            messagebox.showerror("Error", "Invalid username or password")
+            messagebox.showerror("Error","Invalid username or password")
 
 
 class StudentManager:
@@ -81,6 +80,7 @@ class StudentManager:
         ttk.Button(self.top, text="Edit Student", command=self.edit_student).pack(side=tk.LEFT, padx=5)
         ttk.Button(self.top, text="Delete Student", command=self.delete_student).pack(side=tk.LEFT, padx=5)
         ttk.Button(self.top, text="Refresh", command=self.refresh).pack(side=tk.LEFT, padx=5)
+        ttk.Button(self.top, text="Batch Delete", command=self.batch_delete_students).pack(side=tk.LEFT, padx=5)
         search_button = ttk.Button(self.top, text="Search Students", command=self.search_students)
         search_button.pack(side=tk.LEFT, padx=5)
 
@@ -119,7 +119,6 @@ class StudentManager:
         # Clear the treeview
         for child in self.tree.get_children():
             self.tree.delete(child)
-
         # Reload the data from the database
         self.load_students()
         
@@ -140,6 +139,7 @@ class StudentManager:
         add_window.top.transient(self.root)
         add_window.top.grab_set()
         self.root.wait_window(add_window.top)
+        
         self.root.attributes("-disabled", True)
 
         self.root.attributes("-disabled", False)
@@ -162,7 +162,6 @@ class StudentManager:
         edit_window.top.grab_set()
         self.root.wait_window(edit_window.top)
         self.root.attributes("-disabled", True)
-
         self.root.attributes("-disabled", False)
 
     def delete_student(self):
@@ -186,7 +185,25 @@ class StudentManager:
 
             # Remove the student from the treeview
             self.tree.delete(selected_item)
-            
+    def batch_delete_students(self):
+        # Get the selected items from the treeview
+        selected_items = self.tree.selection()
+        if len(selected_items) == 0:
+            messagebox.showwarning("Warning", "Please select at least one student to delete.")
+            return
+
+        # Ask the user to confirm the deletion
+        confirm = messagebox.askyesno("Confirm Deletion", "Are you sure you want to delete the selected students? This action cannot be undone.")
+        if not confirm:
+            return
+
+        # Loop through the selected items and delete them
+        for item in selected_items:
+            student_id = self.tree.item(item, "values")[0]
+            cursor = self.db_conn.cursor()
+            cursor.execute("DELETE FROM students WHERE id = ?", (student_id,))
+            self.db_conn.commit()
+            self.tree.delete(item)
 
 class EditStudentWindow:
     def __init__(self, parent, student_id, name, email, phone,fname,mname):
@@ -233,10 +250,10 @@ class EditStudentWindow:
                 cursor = self.parent.db_conn.cursor()
                 cursor.execute("UPDATE students SET name=?, email=?, phone=?, fname=?, mname=? WHERE id=?", (name, email, phone,fname,mname ,self.student_id))
                 self.parent.db_conn.commit()
-                self.parent.destroy()
-            except Exception as e:
                 messagebox.showinfo("UPDATE","UPDATE SUCCESFULLY!!")
-                self.parent.destroy()
+                # self.parent.destroy()
+                self.top.destroy()
+            except Exception as e:
                 print(f"Error occurred: {e}")
 
 
