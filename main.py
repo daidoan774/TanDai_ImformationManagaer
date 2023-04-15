@@ -57,7 +57,7 @@ class StudentManager:
         self.top.pack(side=tk.TOP)
 
         self.bottom = tk.Frame(self.root, pady=10)
-        self.bottom.place(x=5 , y=100)
+        self.bottom.place(x=5, y=100)
         
         self.tree = ttk.Treeview(self.bottom, columns=("id", "name", "email", "phone","fname","mname"))
         self.tree.heading("#0", text="")
@@ -78,7 +78,7 @@ class StudentManager:
 
         ttk.Button(self.top, text="Add Student", command=self.add_student).pack(side=tk.LEFT, padx=5)
         ttk.Button(self.top, text="Edit Student", command=self.edit_student).pack(side=tk.LEFT, padx=5)
-        ttk.Button(self.top, text="Delete Student", command=self.delete_student).pack(side=tk.LEFT, padx=5)
+        # ttk.Button(self.top, text="Delete Student", command=self.delete_student).pack(side=tk.LEFT, padx=5)
         ttk.Button(self.top, text="Refresh", command=self.refresh).pack(side=tk.LEFT, padx=5)
         ttk.Button(self.top, text="Batch Delete", command=self.batch_delete_students).pack(side=tk.LEFT, padx=5)
         search_button = ttk.Button(self.top, text="Search Students", command=self.search_students)
@@ -164,27 +164,28 @@ class StudentManager:
         self.root.attributes("-disabled", True)
         self.root.attributes("-disabled", False)
 
-    def delete_student(self):
-        # Get the selected item from the treeview
-        selected_item = self.tree.selection()
-        if len(selected_item) == 0:
-            messagebox.showwarning("Warning", "Please select a student to delete.")
-            return
+    # def delete_student(self):
+    #     # Get the selected item from the treeview
+    #     selected_item = self.tree.selection()
+    #     if len(selected_item) == 0:
+    #         messagebox.showwarning("Warning", "Please select a student to delete.")
+    #         return
 
-        # Confirm the deletion with the user
-        confirm = messagebox.askyesno("Confirm Deletion", "Are you sure you want to delete this student?")
+    #     # Confirm the deletion with the user
+    #     confirm = messagebox.askyesno("Confirm Deletion", "Are you sure you want to delete this student?")
 
-        if confirm:
-            # Get the student ID from the selected item
-            student_id = self.tree.item(selected_item, "values")[0]
+    #     if confirm:
+    #         # Get the student ID from the selected item
+    #         student_id = self.tree.item(selected_item, "values")[0]
 
-            # Delete the student from the database
-            cursor = self.db_conn.cursor()
-            cursor.execute("DELETE FROM students WHERE id=?", (student_id))
-            self.db_conn.commit()
+    #         # Delete the student from the database
+    #         cursor = self.db_conn.cursor()
+    #         cursor.execute("DELETE FROM students WHERE id=?", (student_id))
+    #         self.db_conn.commit()
 
-            # Remove the student from the treeview
-            self.tree.delete(selected_item)
+    #         # Remove the student from the treeview
+    #         self.tree.delete(selected_item)
+            
     def batch_delete_students(self):
         # Get the selected items from the treeview
         selected_items = self.tree.selection()
@@ -193,7 +194,7 @@ class StudentManager:
             return
 
         # Ask the user to confirm the deletion
-        confirm = messagebox.askyesno("Confirm Deletion", "Are you sure you want to delete the selected students? This action cannot be undone.")
+        confirm = messagebox.askyesno("Confirm Deletion", "Are you sure you want to delete the selected students? This action cannot be undone!!!!.")
         if not confirm:
             return
 
